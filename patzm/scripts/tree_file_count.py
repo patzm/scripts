@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-import argparse
+import click
 import os.path
 
 from tree_format import print_tree
@@ -30,24 +29,31 @@ def get_children(descending):
     # noinspection PyUnusedLocal
     def _get_children(node):
         tree = node[2]
-        for node_name, (node_files, node_tree) in sorted(tree.items(), key=lambda x: x[1][0], reverse=descending):
+        for node_name, (node_files, node_tree) in sorted(
+            tree.items(), key=lambda x: x[1][0], reverse=descending
+        ):
             yield (node_name, node_files, node_tree)
 
     return _get_children
 
 
-def ls_file_count(config):
-    path = os.path.expanduser(config.path)
+@click.command()
+@click.argument("path", type=click.Path(exists=True))
+@click.option(
+    "--sort",
+    "-s",
+    default="descending",
+    type=click.Choice(["descending", "ascending"], case_sensitive=False),
+    help="In which order to sort the folders.",
+)
+def ls_file_count(path: str, sort: str):
+    """List the files under the root file PATH."""
+    path = os.path.expanduser(path)
     n_files, tree_counted = count_files(path)
 
-    descending = config.sort.lower() == "descending"
-    print_tree((path, n_files, tree_counted), format_node=format_node, get_children=get_children(descending))
-
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument("path", default=".", type=str, help="The root path to list.")
-    parser.add_argument("-s", "--sort", default="descending", type=str, choices=["descending", "ascending"],
-                        help="In which order to sort the folders.")
-    args = parser.parse_args()
-    ls_file_count(config=args)
+    descending = sort.lower() == "descending"
+    print_tree(
+        (path, n_files, tree_counted),
+        format_node=format_node,
+        get_children=get_children(descending),
+    )

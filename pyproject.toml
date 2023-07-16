@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "patzm-scripts"
+version = "0.0.1"
+authors = [
+  { name="Martin Patz", email="martin@patz.family" },
+]
+dependencies = [
+  "click",
+  "tree-format",
+]
+description = "A small collection of scripts"
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/patzm/scripts"
+"Bug Tracker" = "https://github.com/patzm/scripts/issues"
+
+[project.scripts]
+datetime-rename = "patzm.scripts.date_rename:rename"
+scdl-urls = "patzm.scripts.scdl:download_urls"
+tree-file-count = "patzm.scripts.tree_file_count:ls_file_count"
+
+[tools.setuptools.packages.find]
+include = ["patzm"]

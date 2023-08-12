@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "patzm-scripts"
-version = "0.0.1"
+version = "0.0.2"
 authors = [
   { name="Martin Patz", email="martin@patz.family" },
 ]
@@ -28,7 +28,7 @@ classifiers = [
 
 [project.scripts]
 datetime-rename = "patzm.scripts.date_rename:rename"
-firefox-sync = "patzm.scripts.sync-firefox:sync"
+firefox-sync = "patzm.scripts.sync_firefox_dictionary:sync"
 scdl-urls = "patzm.scripts.scdl:download_urls"
 tree-file-count = "patzm.scripts.tree_file_count:ls_file_count"
 

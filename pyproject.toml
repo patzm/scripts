@@ -11,6 +11,7 @@ authors = [
 dependencies = [
   "click",
   "tree-format",
+  "python-gist",
 ]
 description = "A small collection of scripts"
 readme = "README.md"

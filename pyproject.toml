@@ -28,6 +28,7 @@ classifiers = [
 
 [project.scripts]
 datetime-rename = "patzm.scripts.date_rename:rename"
+firefox-sync = "patzm.scripts.sync-firefox:sync"
 scdl-urls = "patzm.scripts.scdl:download_urls"
 tree-file-count = "patzm.scripts.tree_file_count:ls_file_count"
 

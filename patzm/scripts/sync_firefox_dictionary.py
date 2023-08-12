@@ -1,5 +1,3 @@
-#! /usr/bin/env python3
-
 import argparse
 import dataclasses
 import json
@@ -152,7 +150,7 @@ class Syncer:
         return remote_up_to_date
 
 
-if __name__ == "__main__":
+def sync():
     logging.basicConfig()
     logger.setLevel(logging.INFO)
     parser = argparse.ArgumentParser("sync-gist")

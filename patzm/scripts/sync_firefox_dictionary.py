@@ -1,10 +1,10 @@
-import argparse
 import dataclasses
 import json
 import logging
-import os.path
 import pathlib
 from typing import List, Optional, Dict, Set
+
+import click
 
 from gist import client
 from gist import gist as gist_lib
@@ -44,18 +44,25 @@ class PatchingGistApi(gist_lib.GistAPI):
 
 
 class Syncer:
-    def __init__(self, config: argparse.Namespace):
-        if not config.auth_token:
+    def __init__(
+        self,
+        file_path: str,
+        gist_id: Optional[str],
+        auth_token: Optional[str],
+        sort: bool,
+        public: bool,
+    ):
+        if not auth_token:
             gist_config = client.load_config_file()
             token = client.get_personal_access_token(config=gist_config)
         else:
-            token = config.auth_token
+            token = auth_token
 
         # Copy configuration
-        self.gist_id: Optional[str] = config.gist_id
-        self.file_path: pathlib.Path = pathlib.Path(config.file_path)
-        self.public: bool = config.public
-        self.sort: bool = config.sort
+        self.gist_id: Optional[str] = gist_id
+        self.file_path: pathlib.Path = pathlib.Path(file_path)
+        self.public: bool = public
+        self.sort: bool = sort
 
         self.gist_api = PatchingGistApi(token=token)
         self.gist_file_name = self.file_base_name = self.file_path.name
@@ -150,39 +157,50 @@ class Syncer:
         return remote_up_to_date
 
 
-def sync():
+@click.command()
+@click.argument(
+    "file_path",
+    default=None,
+    type=click.Path(exists=True),
+)
+@click.option(
+    "--auth-token",
+    default=None,
+    type=str,
+    help="The GitHub authentication token that can read and write gists. Defaults to reading the "
+    "config like python-gist does. See https://pypi.org/project/python-gist/.",
+)
+@click.option("--gist-id", type=str, default=None, required=False, help="The Gist ID.")
+@click.option(
+    "--sort/--no-sort",
+    is_flag=True,
+    default=True,
+    help="Set this to disable sorting the file content.",
+)
+@click.option(
+    "--public",
+    is_flag=True,
+    default=False,
+    help="Set this to create public gists.",
+)
+def sync(
+    file_path: Optional[str],
+    gist_id: Optional[str],
+    auth_token: str,
+    sort: bool,
+    public: bool,
+):
+    """Synchronizes a local with a remote (gist) Firefox dictionary.
+
+    FILE_PATH: The absolute or relative path to the file that shall be synced.
+    """
     logging.basicConfig()
     logger.setLevel(logging.INFO)
-    parser = argparse.ArgumentParser("sync-gist")
-    parser.add_argument(
-        "--auth-token",
-        type=str,
-        default=None,
-        required=False,
-        help="The GitHub authentication token that can read and write gists. Defaults to reading the "
-        "config like python-gist does. See https://pypi.org/project/python-gist/.",
+    syncer = Syncer(
+        file_path=file_path,
+        gist_id=gist_id,
+        auth_token=auth_token,
+        sort=sort,
+        public=public,
     )
-    parser.add_argument(
-        "--gist-id", type=str, default=None, required=False, help="The Gist ID."
-    )
-    parser.add_argument(
-        "--no-sort",
-        default=True,
-        action="store_false",
-        dest="sort",
-        help="Set this to disable sorting the file content.",
-    )
-    parser.add_argument(
-        "--public",
-        default=False,
-        action="store_true",
-        help="Set this to create public gists.",
-    )
-    parser.add_argument(
-        "file_path",
-        help="The absolute or relative path to the file that shall be synced.",
-    )
-    parsed_args = parser.parse_args()
-
-    syncer = Syncer(config=parsed_args)
     syncer.sync()

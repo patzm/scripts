@@ -1,5 +1,6 @@
-import click
 import os
+
+import click
 
 WORKDIR = os.path.expanduser("~/Downloads/A Princess of Mars")
 CHAPTERS_FILE = os.path.join(WORKDIR, "chapters.txt")

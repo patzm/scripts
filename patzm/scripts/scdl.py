@@ -1,8 +1,8 @@
-import click
 import os.path
 import subprocess
-
 from typing import Optional
+
+import click
 
 
 @click.command()

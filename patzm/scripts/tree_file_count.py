@@ -1,6 +1,6 @@
-import click
 import os.path
 
+import click
 from tree_format import print_tree
 
 

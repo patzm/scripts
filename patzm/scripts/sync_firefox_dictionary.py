@@ -2,14 +2,15 @@ import dataclasses
 import json
 import logging
 import pathlib
-from typing import List, Optional, Dict, Set
+import platform
+from typing import Dict, List, Optional, Set, Union
 
 import click
-
+import psutil
 from gist import client
 from gist import gist as gist_lib
 
-logger = logging.getLogger("sync-gist")
+logger = logging.getLogger("firefox-sync")
 
 
 @dataclasses.dataclass
@@ -46,11 +47,11 @@ class PatchingGistApi(gist_lib.GistAPI):
 class Syncer:
     def __init__(
         self,
-        file_path: str,
+        file_path: Union[str, pathlib.Path],
         gist_id: Optional[str],
-        auth_token: Optional[str],
-        sort: bool,
-        public: bool,
+        auth_token: Optional[str] = None,
+        sort: bool = True,
+        public: bool = False,
     ):
         if not auth_token:
             gist_config = client.load_config_file()
@@ -157,6 +158,24 @@ class Syncer:
         return remote_up_to_date
 
 
+def _sync(
+    file_path: str,
+    gist_id: Optional[str] = None,
+    auth_token: Optional[str] = None,
+    sort: bool = True,
+    public: bool = False,
+):
+    logger.info(f"Synching {file_path}")
+    syncer = Syncer(
+        file_path=file_path,
+        gist_id=gist_id,
+        auth_token=auth_token,
+        sort=sort,
+        public=public,
+    )
+    syncer.sync()
+
+
 @click.command()
 @click.argument(
     "file_path",
@@ -196,11 +215,40 @@ def sync(
     """
     logging.basicConfig()
     logger.setLevel(logging.INFO)
-    syncer = Syncer(
+    _sync(
         file_path=file_path,
         gist_id=gist_id,
         auth_token=auth_token,
         sort=sort,
         public=public,
     )
-    syncer.sync()
+
+
+@click.command()
+@click.option(
+    "--check-firefox",
+    is_flag=True,
+    default=False,
+    help="Set this to check whether Firefox is running. Sync will fail if Firefox is running.",
+)
+def sync_all(check_firefox: bool):
+    logging.basicConfig()
+    logger.setLevel(logging.INFO)
+
+    if check_firefox:
+        processes = [p for p in psutil.process_iter() if "firefox" in p.name()]
+        if processes:
+            logger.error(f"Found {len(processes)} Firefox processes.")
+            for process in processes:
+                print(process)
+            exit(1)
+
+    if platform.system() == "Darwin":
+        config_dir = (
+            pathlib.Path.home() / "Library/Application Support/Firefox/Profiles"
+        )
+    else:
+        config_dir = pathlib.Path.home() / ".mozilla/firefox"
+
+    for profile_dir in config_dir.iterdir():
+        _sync(file_path=profile_dir / "persdict.dat")

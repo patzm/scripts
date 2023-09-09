@@ -11,6 +11,7 @@ authors = [
 dependencies = [
   "click",
   "tree-format",
+  "psutil",
   "python-gist",
 ]
 description = "A small collection of scripts"
@@ -29,6 +30,7 @@ classifiers = [
 [project.scripts]
 datetime-rename = "patzm.scripts.date_rename:rename"
 firefox-sync = "patzm.scripts.sync_firefox_dictionary:sync"
+firefox-sync-all = "patzm.scripts.sync_firefox_dictionary:sync_all"
 scdl-urls = "patzm.scripts.scdl:download_urls"
 tree-file-count = "patzm.scripts.tree_file_count:ls_file_count"
 

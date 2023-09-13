@@ -91,10 +91,7 @@ class Syncer:
                 self.gist_id = target_gist.id
                 logger.info(f"Using Gist {self.gist_id}")
             else:
-                logger.info(
-                    f"No Gist found containing a file "
-                    f"{self.gist_file_name}. Creating new gist."
-                )
+                logger.info(f"No Gist found containing a file " f"{self.gist_file_name}. Creating new gist.")
                 return self.upload_file()
 
         remote_up_to_date = self.merge_file(remote=target_gist)
@@ -128,9 +125,7 @@ class Syncer:
         return new_gist
 
     def merge_file(self, remote: gist_lib.GistInfo) -> bool:
-        remote_content = set(
-            self.gist_api.content(remote.id)[self.gist_file_name].splitlines()
-        )
+        remote_content = set(self.gist_api.content(remote.id)[self.gist_file_name].splitlines())
 
         self.file_path.touch(exist_ok=True)
         with self.file_path.open("r") as file:
@@ -244,9 +239,7 @@ def sync_all(check_firefox: bool):
             exit(1)
 
     if platform.system() == "Darwin":
-        config_dir = (
-            pathlib.Path.home() / "Library/Application Support/Firefox/Profiles"
-        )
+        config_dir = pathlib.Path.home() / "Library/Application Support/Firefox/Profiles"
     else:
         config_dir = pathlib.Path.home() / ".mozilla/firefox"
 

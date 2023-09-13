@@ -19,9 +19,7 @@ import click
     type=str,
     help="Datetime pattern of the output files.",
 )
-@click.option(
-    "--dry", default=False, type=bool, help="If set, do not rename any files."
-)
+@click.option("--dry", default=False, type=bool, help="If set, do not rename any files.")
 def rename(files, datetime_format_in: str, datetime_format_out: str, dry: bool):
     """Renames files with date patterns.
 

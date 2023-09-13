@@ -27,9 +27,7 @@ def download_urls(url_file: str, path: Optional[str]):
             print(f"\nDownloading {url}")
             command = f"scdl {path_arg} -c -l {url}"
             try:
-                output = subprocess.run(
-                    command, shell=True, text=True, capture_output=True, check=True
-                )
+                output = subprocess.run(command, shell=True, text=True, capture_output=True, check=True)
             except subprocess.CalledProcessError as e:
                 if "already downloaded" not in str(e.stderr):
                     n_failed += 1

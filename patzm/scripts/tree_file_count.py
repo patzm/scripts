@@ -29,9 +29,7 @@ def get_children(descending):
     # noinspection PyUnusedLocal
     def _get_children(node):
         tree = node[2]
-        for node_name, (node_files, node_tree) in sorted(
-            tree.items(), key=lambda x: x[1][0], reverse=descending
-        ):
+        for node_name, (node_files, node_tree) in sorted(tree.items(), key=lambda x: x[1][0], reverse=descending):
             yield (node_name, node_files, node_tree)
 
     return _get_children

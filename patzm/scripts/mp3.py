@@ -18,19 +18,12 @@ def join():
             p_start = int(p_start)
             p_stop = int(p_stop)
             print(p_start, p_stop)
-            new_file_name = "{i:02d} {title}.mp3".format(
-                i=i_line + 1, title=title[0].upper() + title[1:]
-            )
+            new_file_name = "{i:02d} {title}.mp3".format(i=i_line + 1, title=title[0].upper() + title[1:])
             old_file_pattern = "{i:03d} - A Princess of Mars.mp3"
-            old_path_names = [
-                os.path.join(WORKDIR, old_file_pattern.format(i=i))
-                for i in range(p_start, p_stop + 1)
-            ]
+            old_path_names = [os.path.join(WORKDIR, old_file_pattern.format(i=i)) for i in range(p_start, p_stop + 1)]
             new_path_name = os.path.join(OUTPUT_DIR, new_file_name)
             command = 'cat {files_in} \\\n> "{file_out}"'.format(
-                files_in=" ".join(
-                    '"' + old_path_name + '"' for old_path_name in old_path_names
-                ),
+                files_in=" ".join('"' + old_path_name + '"' for old_path_name in old_path_names),
                 file_out=new_path_name,
             )
             print(command)

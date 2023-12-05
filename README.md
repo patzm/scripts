@@ -5,5 +5,5 @@ a loose collection of scripts
 
 With `pip>=19`:
 ```bash
-pip install --user scripts@git+https://github.com/patzm/scripts
+pip install --user patzm-scripts@git+https://github.com/patzm/scripts
 ```

@@ -3,6 +3,7 @@ import json
 import logging
 import pathlib
 import platform
+import re
 from typing import Dict, List, Optional, Set, Union
 
 import click
@@ -239,9 +240,14 @@ def sync_all(check_firefox: bool):
             exit(1)
 
     if platform.system() == "Darwin":
-        config_dir = pathlib.Path.home() / "Library/Application Support/Firefox/Profiles"
+        config_dir = pathlib.Path.home() / "Library/Application Support/Firefox"
+        config_dirs = [config_dir, config_dir / "Profiles"]
     else:
-        config_dir = pathlib.Path.home() / ".mozilla/firefox"
+        config_dirs = [pathlib.Path.home() / ".mozilla/firefox"]
 
-    for profile_dir in config_dir.iterdir():
-        _sync(file_path=profile_dir / "persdict.dat")
+    profile_dir_pattern = re.compile(r"(profile-[A-Za-z0-9]+)|([A-Za-z0-9]+\.default(-release)?)")
+    for config_dir in config_dirs:
+        for profile_dir in config_dir.iterdir():
+            match = profile_dir_pattern.match(profile_dir.name)
+            if match:
+                _sync(file_path=profile_dir / "persdict.dat")
